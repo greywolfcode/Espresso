@@ -1,6 +1,9 @@
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class HeaderInserter 
@@ -41,6 +44,54 @@ public class HeaderInserter
 
                     files.put(name, currentFile);
                 }
+            }
+
+            // Process each file
+            for (FileStorage file : files.values())
+            {
+                boolean needsHeader = true;
+                int packageLine = -1;
+                ArrayList<Integer> importLines = new ArrayList<Integer>();
+
+                File fileData = file.getFile();
+
+                //check what needs to be done
+                try(Scanner data = new Scanner(fileData))
+                {
+                    int currentLine = 0;
+                    while (data.hasNext())
+                    {
+                        String line = data.nextLine();
+
+                        //check if licence header is needed
+                        if (line.contains("/*"))
+                        {
+                            needsHeader = false;
+                            while (!line.contains("*/"))
+                            {
+                                line = data.nextLine();
+                            }
+                        }
+                        else if (line.contains("package"))
+                        {
+                            packageLine = currentLine;
+                        }
+                        else if (line.contains("import"))
+                        {
+                            importLines.add(currentLine);
+                        }
+                        //must have hit begining of actual code
+                        else if (line.contains("class"))
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch (IOException e)
+                {
+                    break;
+                }
+                
             }
         }
 
