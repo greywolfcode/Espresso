@@ -24,7 +24,7 @@ public class Espresso
         }
         else
         {
-            run(args)
+            run(args);
         }
     }
     private static void run(String[] files)

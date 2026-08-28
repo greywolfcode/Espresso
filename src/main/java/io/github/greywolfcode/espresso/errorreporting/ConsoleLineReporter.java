@@ -1,8 +1,8 @@
 package io.github.greywolfcode.espresso.errorreporting;
 
-public class ConsoleLineReporter extends ErrorReporter
+public class ConsoleLineReporter implements ErrorReporter
 {
-    private static void report(int lineNum, String file, String type, String message, String line)
+    public void report(int lineNum, String file, String type, String message, String line)
     {
         System.err.println(file + " [line " + lineNum + "] " + type + " Error: " + message);
         System.err.println(lineNum + " | " + line);
