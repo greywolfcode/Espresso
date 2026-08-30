@@ -1,5 +1,9 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,6 +12,27 @@ import java.util.Stack;
 
 public class HeaderInserter 
 {
+    private static String licenceHeader = """ 
+                                        /*
+                                         * Espresso Compiler
+                                         * Copyright (C) 2026  greywolfcode
+                                         * 
+                                         * This program is free software; you can redistribute it and/or modify
+                                         * it under the terms of the GNU General Public License version 2 only, as 
+                                         * published by the Free Software Foundation.
+                                         * 
+                                         * This program is distributed in the hope that it will be useful,
+                                         * but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                         * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                                         * GNU General Public License for more details.
+                                         * 
+                                         * You should have received a copy of the GNU General Public License along
+                                         * with this program; if not, write to the Free Software Foundation, Inc.,
+                                         * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+                                         */
+
+                                        """;
+
     public static void main(String[] args)
     {
         if (args.length == 0)
@@ -38,7 +63,7 @@ public class HeaderInserter
                 {
                     String name = getName(file);
                     //remove the top level path to just get the package path
-                    String packageName = file.getPath().substring(toplevel.getPath().length());
+                    String packageName = new StringBuilder(file.getPath().substring(toplevel.getPath().length())).reverse().toString().replace('/', '.').replace('\\', '.');
 
                     FileStorage currentFile = new FileStorage(name, packageName, file);
 
@@ -91,10 +116,50 @@ public class HeaderInserter
                 {
                     break;
                 }
-                
+
+                //rewrite file
+                try
+                {
+                    Path tempFile = Files.createTempFile(fileData.getName(), ".temp");
+
+                    try (BufferedReader reader = Files.newBufferedReader(fileData.toPath());
+                        BufferedWriter writer = Files.newBufferedWriter(tempFile)) 
+                    {
+                        if (needsHeader)
+                        {
+                            writer.write(licenceHeader);
+                        }
+                        if (packageLine == -1)
+                        {
+                            writer.write("package " + file.packageName + ";");
+                        }
+
+                        String currentLine = "";
+                        int lineNumber = 0;
+
+                        while((currentLine = reader.readLine()) != null)
+                        {
+                            if (lineNumber == packageLine)
+                            {
+                                writer.write("package " + file.packageName + ";");
+                            }
+                            else
+                            {
+                                writer.write(currentLine);
+                            }
+                            writer.newLine();
+
+                            lineNumber++;
+                        }
+
+                    }
+                }
+                catch (IOException e)
+                {
+                    break;
+                }
             }
         }
-
     }
     private static String getExtension(File file)
     {
