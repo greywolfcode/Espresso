@@ -4,14 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.Scanner;
 import java.util.Stack;
 
 public class HeaderInserter 
 {
+    private static final Logger LOGGER = Logger.getLogger(HeaderInserter.class.getName());
+
+
     private static String licenceHeader = """ 
                                         /*
                                          * Espresso Compiler
@@ -40,12 +46,15 @@ public class HeaderInserter
              System.out.println("Folder path expected");
              System.exit(64);
         }
-        else{
+        else
+        {
             process(args[0]);
         }
     }
     private static void process(String folderPath)
     {
+        LOGGER.log(Level.INFO, "Starting Path: " + folderPath);
+
         Stack<File> folders = new Stack<File>();
         HashMap<String, FileStorage> files = new HashMap<String, FileStorage>();
         File toplevel = new File(folderPath);
@@ -57,10 +66,14 @@ public class HeaderInserter
             File[] subFolders = currentFolder.listFiles(File::isDirectory);
             folders.addAll(Arrays.asList(subFolders));
 
+            LOGGER.log(Level.INFO, "Searching " + currentFolder.getPath());
+
             for (File file : currentFolder.listFiles(File::isFile))
             {
                 if (getExtension(file).equals(".java"))
                 {
+                    LOGGER.log(Level.INFO, "Found " + file.getPath());
+
                     String name = getName(file);
                     //remove the top level path to just get the package path
                     String packageName = new StringBuilder(file.getPath().substring(toplevel.getPath().length())).reverse().toString().replace('/', '.').replace('\\', '.');
@@ -80,6 +93,8 @@ public class HeaderInserter
 
                 File fileData = file.getFile();
 
+                LOGGER.log(Level.INFO, "Processing " + fileData.getPath());
+
                 //check what needs to be done
                 try(Scanner data = new Scanner(fileData))
                 {
@@ -96,10 +111,12 @@ public class HeaderInserter
                             {
                                 line = data.nextLine();
                             }
+                            LOGGER.log(Level.INFO, "Requires Licence Header");
                         }
                         else if (line.contains("package"))
                         {
                             packageLine = currentLine;
+                            LOGGER.log(Level.INFO, "Found package at: " + packageLine);
                         }
                         else if (line.contains("import"))
                         {
@@ -107,6 +124,7 @@ public class HeaderInserter
                             if (!line.contains("import java.") || !line.contains("import javax.") || !line.contains("import jdk."))
                             {
                                 importLines.add(currentLine);
+                                LOGGER.log(Level.INFO, "Found import at " + currentLine);
                             }
                         }
                         //must have hit begining of actual code
@@ -131,10 +149,12 @@ public class HeaderInserter
                     {
                         if (needsHeader)
                         {
+                            LOGGER.log(Level.INFO, "Writing Licence Header");
                             writer.write(licenceHeader);
                         }
                         if (packageLine == -1)
                         {
+                            LOGGER.log(Level.INFO, "Writing Package Line");
                             writer.write("package " + file.packageName + ";");
                         }
 
@@ -145,12 +165,14 @@ public class HeaderInserter
                         {
                             if (lineNumber == packageLine)
                             {
+                                LOGGER.log(Level.INFO, "Writing Package Line");
                                 writer.write("package " + file.packageName + ";");
                             }
                             else if (importLines.contains(lineNumber))
                             {
                                 String fileName = currentLine.split(".")[0];
                                 String importPackage = files.get(fileName).packageName;
+                                LOGGER.log(Level.INFO, "Writing Import: " + importPackage);
                                 writer.write("import " + importPackage + "." + fileName + ";");
                             }
                             else
@@ -161,8 +183,8 @@ public class HeaderInserter
 
                             lineNumber++;
                         }
-
                     }
+                    Files.move(tempFile, fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
                 catch (IOException e)
                 {
