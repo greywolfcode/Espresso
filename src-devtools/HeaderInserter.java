@@ -103,7 +103,11 @@ public class HeaderInserter
                         }
                         else if (line.contains("import"))
                         {
-                            importLines.add(currentLine);
+                            //ignore standard library imports
+                            if (!line.contains("import java.") || !line.contains("import javax.") || !line.contains("import jdk."))
+                            {
+                                importLines.add(currentLine);
+                            }
                         }
                         //must have hit begining of actual code
                         else if (line.contains("class"))
@@ -142,6 +146,12 @@ public class HeaderInserter
                             if (lineNumber == packageLine)
                             {
                                 writer.write("package " + file.packageName + ";");
+                            }
+                            else if (importLines.contains(lineNumber))
+                            {
+                                String fileName = currentLine.split(".")[0];
+                                String importPackage = files.get(fileName).packageName;
+                                writer.write("import " + importPackage + "." + fileName + ";");
                             }
                             else
                             {
