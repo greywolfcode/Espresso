@@ -76,7 +76,7 @@ public class HeaderInserter
 
                     String name = getName(file);
                     //remove the top level path to just get the package path
-                    String packageName = new StringBuilder(file.getPath().substring(toplevel.getPath().length())).reverse().toString().replace('/', '.').replace('\\', '.');
+                    String packageName = getPackageName(file.toPath(), toplevel.toPath());
 
                     FileStorage currentFile = new FileStorage(name, packageName, file);
 
@@ -226,6 +226,40 @@ public class HeaderInserter
         }
 
         return name.substring(0, extensionIndex);
+    }
+    private static String getPackageName(Path file, Path topLevel)
+    {
+        // /new StringBuilder(file.getPath().substring(toplevel.getPath().length())).reverse().toString().replace('/', '.').replace('\\', '.');
+        ArrayList<String> pathData = new ArrayList<String>();
+
+        for (Path section : file)
+        {
+            //don't include end of path
+            if (!section.toString().contains(".java"))
+            {
+                pathData.add(section.toString());
+            }
+        }
+
+        //remove top level path sections
+        for (int i=0; i<topLevel.getNameCount(); i++)
+        {
+            pathData.remove(0);
+        }
+
+        pathData.reversed();
+
+        StringBuilder packageData = new StringBuilder();
+
+        for (String part : pathData)
+        {
+            packageData.append(part);
+            packageData.append(".");
+        }
+        //remove trialing period
+        packageData.setLength(packageData.length() - 1);
+
+        return packageData.toString();
     }
 }
 
