@@ -83,115 +83,118 @@ public class HeaderInserter
                     files.put(name, currentFile);
                 }
             }
+        }
 
-            // Process each file
-            for (FileStorage file : files.values())
+        // Process each file
+        for (FileStorage file : files.values())
+        {
+            boolean needsHeader = true;
+            int packageLine = -1;
+            ArrayList<Integer> importLines = new ArrayList<Integer>();
+
+            File fileData = file.getFile();
+
+            LOGGER.log(Level.INFO, "Processing " + fileData.getPath());
+
+            //check what needs to be done
+            try(Scanner data = new Scanner(fileData))
             {
-                boolean needsHeader = true;
-                int packageLine = -1;
-                ArrayList<Integer> importLines = new ArrayList<Integer>();
-
-                File fileData = file.getFile();
-
-                LOGGER.log(Level.INFO, "Processing " + fileData.getPath());
-
-                //check what needs to be done
-                try(Scanner data = new Scanner(fileData))
+                int currentLine = 0;
+                while (data.hasNext())
                 {
-                    int currentLine = 0;
-                    while (data.hasNext())
+                    String line = data.nextLine();
+
+                    //check if licence header is needed
+                    if (line.contains("/*"))
                     {
-                        String line = data.nextLine();
-
-                        //check if licence header is needed
-                        if (line.contains("/*"))
+                        needsHeader = false;
+                        while (!line.contains("*/"))
                         {
-                            needsHeader = false;
-                            while (!line.contains("*/"))
-                            {
-                                line = data.nextLine();
-                            }
-                            LOGGER.log(Level.INFO, "Requires Licence Header");
+                            line = data.nextLine();
                         }
-                        else if (line.contains("package"))
-                        {
-                            packageLine = currentLine;
-                            LOGGER.log(Level.INFO, "Found package at: " + packageLine);
-                        }
-                        else if (line.contains("import"))
-                        {
-                            //ignore standard library imports
-                            if (!line.contains("import java.") || !line.contains("import javax.") || !line.contains("import jdk."))
-                            {
-                                importLines.add(currentLine);
-                                LOGGER.log(Level.INFO, "Found import at " + currentLine);
-                            }
-                        }
-                        //must have hit begining of actual code
-                        else if (line.contains("class"))
-                        {
-                            break;
-                        }
-
-                        currentLine++;
+                        LOGGER.log(Level.INFO, "Requires Licence Header");
                     }
-                }
-                catch (IOException e)
-                {
-                    break;
-                }
-
-                //rewrite file
-                try
-                {
-                    Path tempFile = Files.createTempFile(fileData.getName(), ".temp");
-
-                    try (BufferedReader reader = Files.newBufferedReader(fileData.toPath());
-                        BufferedWriter writer = Files.newBufferedWriter(tempFile)) 
+                    else if (line.contains("package"))
                     {
-                        if (needsHeader)
+                        packageLine = currentLine;
+                        LOGGER.log(Level.INFO, "Found package at: " + packageLine);
+                    }
+                    else if (line.contains("import"))
+                    {
+                        //ignore standard library imports
+                        if (!line.contains("import java.") && !line.contains("import javax.") && !line.contains("import jdk."))
                         {
-                            LOGGER.log(Level.INFO, "Writing Licence Header");
-                            writer.write(licenceHeader);
+                            importLines.add(currentLine);
+                            LOGGER.log(Level.INFO, "Found import at " + currentLine);
                         }
-                        if (packageLine == -1)
+                    }
+                    //must have hit begining of actual code
+                    else if (line.contains("class"))
+                    {
+                        break;
+                    }
+
+                    currentLine++;
+                }
+            }
+            catch (IOException e)
+            {
+                break;
+            }
+
+            //rewrite file
+            try
+            {
+                Path tempFile = Files.createTempFile(fileData.getName(), ".temp");
+
+                try (BufferedReader reader = Files.newBufferedReader(fileData.toPath());
+                    BufferedWriter writer = Files.newBufferedWriter(tempFile)) 
+                {
+                    if (needsHeader)
+                    {
+                        LOGGER.log(Level.INFO, "Writing Licence Header");
+                        writer.write(licenceHeader);
+                    }
+                    if (packageLine == -1)
+                    {
+                        LOGGER.log(Level.INFO, "Writing Package Line");
+                        writer.write("package " + file.packageName + ";");
+                    }
+
+                    String currentLine = "";
+                    int lineNumber = 0;
+
+                    while((currentLine = reader.readLine()) != null)
+                    {
+                        if (lineNumber == packageLine)
                         {
                             LOGGER.log(Level.INFO, "Writing Package Line");
                             writer.write("package " + file.packageName + ";");
                         }
-
-                        String currentLine = "";
-                        int lineNumber = 0;
-
-                        while((currentLine = reader.readLine()) != null)
+                        else if (importLines.contains(lineNumber))
                         {
-                            if (lineNumber == packageLine)
-                            {
-                                LOGGER.log(Level.INFO, "Writing Package Line");
-                                writer.write("package " + file.packageName + ";");
-                            }
-                            else if (importLines.contains(lineNumber))
-                            {
-                                String fileName = currentLine.split("\\.")[0];
-                                String importPackage = files.get(fileName).packageName;
-                                LOGGER.log(Level.INFO, "Writing Import: " + importPackage);
-                                writer.write("import " + importPackage + "." + fileName + ";");
-                            }
-                            else
-                            {
-                                writer.write(currentLine);
-                            }
-                            writer.newLine();
+                            String[] importParts = currentLine.split("\\.");
+                            String fileName = importParts[importParts.length - 1];
+                            fileName = fileName.substring(0, fileName.length() - 1); //strip off semicolon
 
-                            lineNumber++;
+                            String importPackage = files.get(fileName).packageName;
+                            LOGGER.log(Level.INFO, "Writing Import: " + importPackage);
+                            writer.write("import " + importPackage + "." + fileName + ";");
                         }
+                        else
+                        {
+                            writer.write(currentLine);
+                        }
+                        writer.newLine();
+
+                        lineNumber++;
                     }
-                    Files.move(tempFile, fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
-                catch (IOException e)
-                {
-                    break;
-                }
+                Files.move(tempFile, fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+            catch (IOException e)
+            {
+                break;
             }
         }
     }
