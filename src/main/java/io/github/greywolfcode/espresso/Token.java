@@ -27,15 +27,16 @@ public class Token
     private String token;
     private TokenType type;
 
-    public Token(int paramOffset, String paramFile, String paramToken, TokenType type)
+    public Token(int paramOffset, String paramFile, String paramToken, TokenType paramType)
     {
         offset = paramOffset;
         file = paramFile;
         token = paramToken;
+        type = paramType;
     }
     public String toString()
     {
-        return "Token from ";
+        return "Token: " + token + " Type: " + type;
     }
 
 }
