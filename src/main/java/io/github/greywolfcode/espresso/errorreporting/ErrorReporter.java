@@ -1,7 +1,13 @@
 package io.github.greywolfcode.espresso.errorreporting;
 
-
-public interface ErrorReporter 
+public abstract class ErrorReporter 
 {
-    void report(int lineNum, String file, String type, String message, String line);
+    protected boolean hadError = false;
+
+    public abstract void report(int lineNum, String file, String type, String message, String line);
+
+    public boolean getHadError()
+    {
+        return hadError;
+    }
 }
