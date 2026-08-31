@@ -132,6 +132,8 @@ public class HeaderInserter
                         {
                             break;
                         }
+
+                        currentLine++;
                     }
                 }
                 catch (IOException e)
