@@ -172,7 +172,7 @@ public class HeaderInserter
                             }
                             else if (importLines.contains(lineNumber))
                             {
-                                String fileName = currentLine.split(".")[0];
+                                String fileName = currentLine.split("\\.")[0];
                                 String importPackage = files.get(fileName).packageName;
                                 LOGGER.log(Level.INFO, "Writing Import: " + importPackage);
                                 writer.write("import " + importPackage + "." + fileName + ";");
