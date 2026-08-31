@@ -17,7 +17,7 @@ public class Token
     }
     public String toString()
     {
-        return "Token from "
+        return "Token from ";
     }
 
 }
