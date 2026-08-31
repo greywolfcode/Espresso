@@ -53,6 +53,7 @@ public class Lexer
     }
     private void processToken()
     {
+        start = offset;
         char nextChar = getNext();
         switch (nextChar)
         {
@@ -87,16 +88,16 @@ public class Lexer
                 addToken(TokenType.PERIOD);
                 break;
             case '=':
-                addToken(TokenType.EQUALS);
+                addToken(match('=') ? TokenType.EQUALS_EQUALS : TokenType.EQUALS);
                 break;
             case '!':
-                addToken(TokenType.NOT);
+                addToken(match('=') ? TokenType.NOT_EQUALS : TokenType.NOT);
                 break;
             case '>':
-                addToken(TokenType.GREATER);
+                addToken(match('=') ? TokenType.GREATER_EQUALS : TokenType.GREATER);
                 break;
             case '<':
-                addToken(TokenType.LESS);
+                addToken(match('=') ? TokenType.LESS_EQUALS : TokenType.LESS);
                 break;
             default:
                 //TODO: Report Error Here
@@ -106,6 +107,18 @@ public class Lexer
     private boolean isEnd()
     {
         if (offset >= source.length())
+        {
+            return true;
+        }
+        return false;
+    }
+    private boolean match(char token)
+    {
+        if (isEnd())
+        {
+            return false;
+        }
+        if (!(source.charAt(offset + 1) == token))
         {
             return true;
         }
