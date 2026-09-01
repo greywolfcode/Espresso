@@ -58,51 +58,198 @@ public class Lexer
         switch (nextChar)
         {
             case '+':
-                addToken(TokenType.PLUS);
+                appendToken(TokenType.PLUS);
                 break;
             case '-':
-                addToken(TokenType.MINUS);
+                appendToken(TokenType.MINUS);
                 break;
             case '*':
-                addToken(TokenType.STAR);
+                appendToken(TokenType.STAR);
                 break;
             case '(':
-                addToken(TokenType.LEFT_PAREN);
+                appendToken(TokenType.LEFT_PAREN);
                 break;
             case ')':
-                addToken(TokenType.RIGHT_PAREN);
+                appendToken(TokenType.RIGHT_PAREN);
                 break;
             case ';':
-                addToken(TokenType.SEMICOLON);
+                appendToken(TokenType.SEMICOLON);
                 break;
             case '{':
-                addToken(TokenType.LEFT_CURLY_BRACKET);
+                appendToken(TokenType.LEFT_CURLY_BRACKET);
                 break;
             case '}':
-                addToken(TokenType.RIGHT_CURLY_BRACKET);
+                appendToken(TokenType.RIGHT_CURLY_BRACKET);
                 break;
             case ',':
-                addToken(TokenType.COMMA);
+                appendToken(TokenType.COMMA);
                 break;
             case '.':
-                addToken(TokenType.PERIOD);
+                appendToken(TokenType.PERIOD);
                 break;
             case '=':
-                addToken(match('=') ? TokenType.EQUALS_EQUALS : TokenType.EQUALS);
+                appendToken(match('=') ? TokenType.EQUALS_EQUALS : TokenType.EQUALS);
                 break;
             case '!':
-                addToken(match('=') ? TokenType.NOT_EQUALS : TokenType.NOT);
+                appendToken(match('=') ? TokenType.NOT_EQUALS : TokenType.NOT);
                 break;
             case '>':
-                addToken(match('=') ? TokenType.GREATER_EQUALS : TokenType.GREATER);
+                appendToken(match('=') ? TokenType.GREATER_EQUALS : TokenType.GREATER);
                 break;
             case '<':
-                addToken(match('=') ? TokenType.LESS_EQUALS : TokenType.LESS);
+                appendToken(match('=') ? TokenType.LESS_EQUALS : TokenType.LESS);
+                break;
+            case '"':
+                parseString();
                 break;
             default:
                 //TODO: Report Error Here
                 break;
         }
+    }
+    private void parseString()
+    {
+        while (!match('"') && !isEnd())
+        {
+            if (check('\n'))
+            {
+                //TODO: throw error for new line in String
+                break;
+            }
+        }
+
+        //strip of quote charachters
+        String token = source.substring(start + 1, offset - 1);
+        token = parseEscapeChars(token);
+        appendToken(TokenType.STRING, token);
+    }
+    private String parseEscapeChars(String source)
+    {
+        StringBuilder output = new StringBuilder();
+
+        for (int i = 0; i < source.length(); i++)
+        {
+            if (source.charAt(i) != '\\')
+            {
+                output.append(source.charAt(i));
+            }
+            else
+            {
+                switch (source.charAt(i+1))
+                {
+                    case 't': // tab
+                        output.append('\t');
+                        break;
+                    case 'b': // backspace
+                        output.append('\b');
+                        break;
+                    case 'n': // newline
+                        output.append('\n');
+                        break;
+                    case 'r': // carrige return
+                        output.append('\r');
+                        break;
+                    case 'f': // form feed
+                        output.append('\f');
+                        break;
+                    case '\'': // single quote
+                        output.append('\'');
+                        break;
+                    case '\"': // double quote
+                        output.append('\"');
+                        break;
+                    case ('\\'): // backslash
+                        output.append('\\');
+                        break;
+                    case ('u'): //unicode escape code
+                        char[] unicodeNumber = new char[4];
+                        unicodeNumber[0] = source.charAt(i+2);
+                        unicodeNumber[0] = source.charAt(i+3);
+                        unicodeNumber[0] = source.charAt(i+4);
+                        unicodeNumber[0] = source.charAt(i+5);
+
+                        boolean invalid = false;
+                        for (char c : unicodeNumber)
+                        {
+                            if (!(c >= '0' && c <= '9') ||
+                                (c >= 'a' && c <= 'f') ||
+                                (c >= 'A' && c <= 'F'))
+                            {
+                                invalid = true;
+                                //TODO: Throw error here
+                                break;
+                            }
+                        }
+                        if (invalid)
+                        {
+                            break;
+                        }
+
+                        int hexVal = Integer.parseInt(new String(unicodeNumber));
+                        char charachter= (char)hexVal;
+                        
+                        output.append(charachter);
+                        i+=3; //move passed unicode escape
+                        break;
+                    default:
+                        //handle octal escape codes
+                        if (isDigit(source.charAt(i+1)))
+                        {
+                            StringBuilder octalNumber = new StringBuilder();
+                            octalNumber.append(source.charAt(i+1));
+
+                            if (isDigit(source.charAt(i+2)))
+                            {
+                                octalNumber.append(source.charAt(i+2));
+                            }
+                            if (isDigit(source.charAt(i+3)))
+                            {
+                                octalNumber.append(source.charAt(i+2));
+                            }
+
+                            //first charachter bounds
+                            if (!(octalNumber.charAt(0) >= '0' && octalNumber.charAt(0) <= '3'))
+                            {
+                                //TODO: Throw error here
+                                break;
+                            }
+                            //second charchter bounds
+                            if (octalNumber.length() > 1)
+                            {
+                                if (!isOctal(octalNumber.charAt(1)))
+                                {
+                                    //TODO: Throw error here
+                                    break;
+                                }
+                                i++; //need to increment extra
+                            }
+                            //third charchter bounds
+                            if (octalNumber.length() > 2)
+                            {
+                                if (!isOctal(octalNumber.charAt(2)))
+                                {
+                                    //TODO: Throw error here
+                                    break;
+                                }
+                                i++;
+                            }
+
+                            int octalVal = Integer.parseInt(octalNumber.toString(), 8);
+                            char octalChar = (char)octalVal;
+
+                            output.append(octalChar);
+                        }
+
+                        //TODO: Throw error here
+                        break;
+                }
+
+                //consume charachter
+                i++;
+            }
+        }
+
+        return output.toString();
     }
     private boolean isEnd()
     {
@@ -112,6 +259,14 @@ public class Lexer
         }
         return false;
     }
+    private boolean isDigit(char token)
+    {
+        return token >= '0' && token <= '9';
+    }
+    private boolean isOctal(char token)
+    {
+        return token >= '0' && token <= '7';
+    }
     private boolean match(char token)
     {
         if (isEnd())
@@ -120,17 +275,42 @@ public class Lexer
         }
         if (!(source.charAt(offset + 1) == token))
         {
-            return true;
+            return false;
         }
-        return false;
+        offset++;
+        return true;
+    }
+    private char peak()
+    {
+        if (isEnd())
+        {
+            return '\0';
+        }
+        return source.charAt(offset + 1);
     }
     private char getNext()
     {
         return source.charAt(offset++);
     }
-    private void addToken(TokenType type)
+    private boolean check(char token)
+    {
+        if (isEnd())
+        {
+            return false;
+        }
+        if (!(source.charAt(offset) == token))
+        {
+            return false;
+        }
+        return true;
+    }
+    private void appendToken(TokenType type)
     {
         String lexeme = source.substring(start, offset);
+        appendToken(type, lexeme);
+    }
+    private void appendToken(TokenType type, String lexeme)
+    {
         tokens.add(new Token(start, sourceName, lexeme, type));
     }
 }
