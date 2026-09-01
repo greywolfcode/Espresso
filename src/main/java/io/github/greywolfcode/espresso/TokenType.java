@@ -47,6 +47,8 @@ public enum TokenType
     TRUE,
     FALSE,
     NULL,
+    STRING,
+    NUMBER,
 
     // Keywords
     ABSTRACT,
