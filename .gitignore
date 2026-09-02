@@ -1,3 +1,7 @@
+## Command files
+*.bat
+*.sh
+
 # Compiled class file
 *.class
 
