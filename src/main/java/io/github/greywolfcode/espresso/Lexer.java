@@ -103,9 +103,34 @@ public class Lexer
                 parseString();
                 break;
             default:
-                //TODO: Report Error Here
+                if (isDigit(nextChar))
+                {
+                    parseNumber();
+                }
+                else
+                {
+                    //TODO: Report Error Here
+                }
                 break;
         }
+    }
+    private void parseNumber()
+    {
+        while(isDigit(peek()))
+        {
+            getNext();
+        }
+
+        //No trailing decimal points
+        if (peek() == '.' && isDigit(peekTwo()))
+        {
+            while(isDigit(peek()))
+            {
+                getNext();
+            }
+        }
+
+        appendToken(TokenType.NUMBER);
     }
     private void parseString()
     {
@@ -116,6 +141,7 @@ public class Lexer
                 //TODO: throw error for new line in String
                 break;
             }
+            offset++;
         }
 
         //strip of quote charachters
@@ -259,6 +285,14 @@ public class Lexer
         }
         return false;
     }
+    private boolean isEndTwo()
+    {
+        if (offset + 1 >= source.length())
+        {
+            return true;
+        }
+        return false;
+    }
     private boolean isDigit(char token)
     {
         return token >= '0' && token <= '9';
@@ -280,9 +314,17 @@ public class Lexer
         offset++;
         return true;
     }
-    private char peak()
+    private char peek()
     {
         if (isEnd())
+        {
+            return '\0';
+        }
+        return source.charAt(offset + 1);
+    }
+    private char peekTwo()
+    {
+        if (isEndTwo())
         {
             return '\0';
         }
