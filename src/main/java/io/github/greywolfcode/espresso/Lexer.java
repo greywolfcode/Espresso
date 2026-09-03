@@ -20,6 +20,7 @@ package io.github.greywolfcode.espresso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.github.greywolfcode.espresso.errorreporting.ErrorReporter;
 
@@ -28,6 +29,57 @@ import io.github.greywolfcode.espresso.TokenType;
 
 public class Lexer 
 {
+    private static final Map<String, TokenType> keywords = Map.ofEntries(
+        Map.entry("abstract", TokenType.ABSTRACT),
+        Map.entry("assert", TokenType.ASSERT),
+        Map.entry("boolean", TokenType.BOOLEAN),
+        Map.entry("break", TokenType.BREAK),
+        Map.entry("byte", TokenType.BYTE),
+        Map.entry("case", TokenType.CASE),
+        Map.entry("catch", TokenType.CATCH),
+        Map.entry("char", TokenType.CHAR),
+        Map.entry("class", TokenType.CLASS),
+        Map.entry("continue", TokenType.CONTINUE),
+        Map.entry("default", TokenType.DEFAULT),
+        Map.entry("do", TokenType.DO),
+        Map.entry("double", TokenType.DOUBLE),
+        Map.entry("else", TokenType.ELSE),
+        Map.entry("enum", TokenType.ENUM),
+        Map.entry("extends", TokenType.EXTENDS),
+        Map.entry("final", TokenType.FINAL),
+        Map.entry("finally", TokenType.FINALLY),
+        Map.entry("float", TokenType.FLOAT),
+        Map.entry("for", TokenType.FOR),
+        Map.entry("if", TokenType.IF),
+        Map.entry("implements", TokenType.IMPLEMENTS),
+        Map.entry("import", TokenType.IMPORT),
+        Map.entry("instanceof", TokenType.INSTANCEOF),
+        Map.entry("int", TokenType.INT),
+        Map.entry("interface", TokenType.INTERFACE),
+        Map.entry("long", TokenType.LONG),
+        Map.entry("native", TokenType.NATIVE),
+        Map.entry("new", TokenType.NEW),
+        Map.entry("package", TokenType.PACKAGE),
+        Map.entry("private", TokenType.PRIVATE),
+        Map.entry("public", TokenType.PUBLIC),
+        Map.entry("protected", TokenType.PROTECTED),
+        Map.entry("return", TokenType.RETURN),
+        Map.entry("short", TokenType.SHORT),
+        Map.entry("static", TokenType.STATIC),
+        Map.entry("strictfp", TokenType.STRICTFP),
+        Map.entry("super", TokenType.SUPER),
+        Map.entry("switch", TokenType.SWITCH),
+        Map.entry("synchronized", TokenType.SYNCHRONIZED),
+        Map.entry("this", TokenType.THIS),
+        Map.entry("throw", TokenType.THROW),
+        Map.entry("throws", TokenType.THROWS),
+        Map.entry("transient", TokenType.TRANSIENT),
+        Map.entry("try", TokenType.TRY),
+        Map.entry("void", TokenType.VOID),
+        Map.entry("volatile", TokenType.VOLATILE),
+        Map.entry("while", TokenType.WHILE)
+    );
+
     private String source;
     private String sourceName;
     private int start = 0;
@@ -102,10 +154,17 @@ public class Lexer
             case '"':
                 parseString();
                 break;
+            //ignore whitespace
+            case ' ', '\n', '\t', '\r':
+                break;
             default:
                 if (isDigit(nextChar))
                 {
                     parseNumber();
+                }
+                else if (isAlphaNumeric(nextChar))
+                {
+                    parseIdentifier();
                 }
                 else
                 {
@@ -277,6 +336,24 @@ public class Lexer
 
         return output.toString();
     }
+    private void parseIdentifier()
+    {
+        while (isAlphaNumeric(peek()))
+        {
+            getNext();
+        }
+
+        String identifier = source.substring(start, offset);
+
+        if (keywords.containsKey(identifier))
+        {
+            appendToken(keywords.get(identifier));
+        }
+        else
+        {
+            appendToken(TokenType.IDENTIFIER);
+        }
+    }
     private boolean isEnd()
     {
         if (offset >= source.length())
@@ -300,6 +377,12 @@ public class Lexer
     private boolean isOctal(char token)
     {
         return token >= '0' && token <= '7';
+    }
+    private boolean isAlphaNumeric(char token)
+    {
+        return (token >= '0' && token <= '9') ||
+               (token >= 'a' && token <= 'z') ||
+               (token >= 'A' && token <= 'Z');
     }
     private boolean match(char token)
     {
