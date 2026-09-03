@@ -50,6 +50,9 @@ public enum TokenType
     STRING,
     NUMBER,
 
+    //Identifiers
+    IDENTIFIER,
+
     // Keywords
     ABSTRACT,
     ASSERT,
