@@ -256,9 +256,7 @@ public class Lexer
                         boolean invalid = false;
                         for (char c : unicodeNumber)
                         {
-                            if (!(c >= '0' && c <= '9') ||
-                                (c >= 'a' && c <= 'f') ||
-                                (c >= 'A' && c <= 'F'))
+                            if (isHexadecimal(c))
                             {
                                 invalid = true;
                                 //TODO: Throw error here
@@ -377,6 +375,12 @@ public class Lexer
     private boolean isOctal(char token)
     {
         return token >= '0' && token <= '7';
+    }
+    private boolean isHexadecimal(char token)
+    {
+        return (token >= '0' && token <= '9') 
+            || (token >= 'a' && token <= 'f') 
+            || (token >= 'A' && token <= 'F');
     }
     private boolean isAlphaNumeric(char token)
     {
