@@ -336,10 +336,9 @@ public class Lexer
     }
     private void parseIdentifier()
     {
-        while (isAlphaNumeric(peek()))
-        {
-            getNext();
-        }
+        //Always makes offset one larger than needed
+        while (isAlphaNumeric(getNext())){}
+        offset--;
 
         String identifier = source.substring(start, offset);
 
