@@ -384,9 +384,9 @@ public class Lexer
     }
     private boolean isAlphaNumeric(char token)
     {
-        return (token >= '0' && token <= '9') ||
-               (token >= 'a' && token <= 'z') ||
-               (token >= 'A' && token <= 'Z');
+        return (token >= '0' && token <= '9') 
+            || (token >= 'a' && token <= 'z') 
+            || (token >= 'A' && token <= 'Z');
     }
     private boolean match(char token)
     {
