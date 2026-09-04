@@ -36,7 +36,7 @@ public class Token
     }
     public String toString()
     {
-        return "Token: " + token + " Type: " + type;
+        return "Token: " + token + " Type: " + type + " " + offset;
     }
 
 }
