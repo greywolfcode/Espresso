@@ -79,6 +79,11 @@ public class Lexer
         Map.entry("volatile", TokenType.VOLATILE),
         Map.entry("while", TokenType.WHILE)
     );
+    private static final Map<String, TokenType> literals = Map.ofEntries(
+        Map.entry("true", TokenType.TRUE),
+        Map.entry("false", TokenType.FALSE),
+        Map.entry("null", TokenType.NULL)
+    );
 
     private String source;
     private String sourceName;
@@ -345,6 +350,10 @@ public class Lexer
         if (keywords.containsKey(identifier))
         {
             appendToken(keywords.get(identifier));
+        }
+        if (literals.containsKey(identifier))
+        {
+            appendToken(literals.get(identifier));
         }
         else
         {
