@@ -129,6 +129,12 @@ public class Lexer
             case ')':
                 appendToken(TokenType.RIGHT_PAREN);
                 break;
+            case '[':
+                appendToken(TokenType.LEFT_SQUARE_BRACKET);
+                break;
+            case ']':
+                appendToken(TokenType.RIGHT_SQUARE_BRACKET);
+                break;
             case ';':
                 appendToken(TokenType.SEMICOLON);
                 break;
