@@ -20,11 +20,14 @@ package io.github.greywolfcode.espresso.errorreporting;
 
 public class ConsoleLineReporter extends ErrorReporter
 {
-    public void report(int lineNum, String file, String type, String message, String line)
+    public void report(int offset, String fileData, String fileName, String message)
     {
         hadError = true;
+
+        LineData data = getLineData(fileData, offset);
         
-        System.err.println(file + " [line " + lineNum + "] " + type + " Error: " + message);
-        System.err.println(lineNum + " | " + line);
+        System.err.println(fileName + " [line " + data.lineNum() + "] Error: " + message);
+        System.err.println(data.lineNum() + " | " + data.line());
+        System.err.println(" ".repeat(String.valueOf(data.lineNum()).length()) + "   " + "~".repeat(data.offset()) + "^");
     }
 }

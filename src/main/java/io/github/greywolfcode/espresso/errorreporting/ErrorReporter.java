@@ -22,10 +22,31 @@ public abstract class ErrorReporter
 {
     protected boolean hadError = false;
 
-    public abstract void report(int lineNum, String file, String type, String message, String line);
+    public abstract void report(int offset, String fileData, String fileName, String message);
 
     public boolean getHadError()
     {
         return hadError;
+    }
+    
+    protected LineData getLineData(String fileData, int offset)
+    {
+        int newlines = 0;
+        int lineStart = 0;
+
+        for (int i=0; i<offset; i++)
+        {
+           if (fileData.charAt(i) == '\n')
+           {
+               newlines++;
+
+               //there should never be a case where this
+               //could throw an out of bounds error because
+               //the newline must always before the offset
+               lineStart = i + 1;
+           } 
+        }
+
+        return new LineData(newlines, offset - lineStart, fileData.substring(lineStart, offset));
     }
 }
