@@ -86,16 +86,16 @@ public class Lexer
     );
 
     private String source;
-    private String sourceName;
+    private Path sourcePath;
     private int start = 0;
     private int offset = 0;
     private final ErrorReporter errorHandeler;
     private final ArrayList<Token> tokens;
 
-    public Lexer(String paramSource, String paramSourceName, ErrorReporter paramErrorHandeler)
+    public Lexer(String paramSource, Path paramSourcePath, ErrorReporter paramErrorHandeler)
     {
         source = paramSource;
-        sourceName = paramSourceName;
+        sourcePath = paramSourcePath;
         tokens = new ArrayList<Token>();
         errorHandeler = paramErrorHandeler;
     }
@@ -448,6 +448,6 @@ public class Lexer
     }
     private void appendToken(TokenType type, String lexeme)
     {
-        tokens.add(new Token(start, sourceName, lexeme, type));
+        tokens.add(new Token(start, sourcePath, lexeme, type));
     }
 }

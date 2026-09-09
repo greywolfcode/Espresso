@@ -16,9 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.greywolfcode.espresso;
-
-import java.io.IOException;
+package io.github.greywolfcode.espresso;import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,8 +60,6 @@ public class Espresso
     }
     private static void run(String[] files)
     {
-
-
         for (String path : files)
         {
             try
@@ -71,7 +67,7 @@ public class Espresso
                 Path filePath = Path.of(path);
                 String fileName = filePath.getFileName().toString();
                 String fileData = Files.readString(filePath);
-                Lexer lexer = new Lexer(fileData, fileName, errorHandeler);
+                Lexer lexer = new Lexer(fileData, filePath, errorHandeler);
                 List<Token> tokens = lexer.scan();
                 System.out.println(tokens);
                 

@@ -18,16 +18,18 @@
 
 package io.github.greywolfcode.espresso;
 
+import java.nio.file.Path;
+
 import io.github.greywolfcode.espresso.TokenType;
 
 public class Token 
 {
     private int offset;
-    private String file;
+    private Path file;
     private String token;
     private TokenType type;
 
-    public Token(int paramOffset, String paramFile, String paramToken, TokenType paramType)
+    public Token(int paramOffset, Path paramFile, String paramToken, TokenType paramType)
     {
         offset = paramOffset;
         file = paramFile;
