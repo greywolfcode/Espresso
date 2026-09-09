@@ -18,6 +18,8 @@
 
 package io.github.greywolfcode.espresso;
 
+import java.nio.file.Path;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +181,7 @@ public class Lexer
                 }
                 else
                 {
-                    //TODO: Report Error Here
+                    errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Token " + source.substring(start, offset));
                 }
                 break;
         }
@@ -208,11 +210,13 @@ public class Lexer
         {
             if (check('\n'))
             {
-                //TODO: throw error for new line in String
+                errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Expected '\"'");
                 break;
             }
             offset++;
         }
+        //move to the final quote mark
+        offset++;
 
         //strip of quote charachters
         String token = source.substring(start + 1, offset - 1);
@@ -270,7 +274,7 @@ public class Lexer
                             if (isHexadecimal(c))
                             {
                                 invalid = true;
-                                //TODO: Throw error here
+                                errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                 break;
                             }
                         }
@@ -304,7 +308,7 @@ public class Lexer
                             //first charachter bounds
                             if (!(octalNumber.charAt(0) >= '0' && octalNumber.charAt(0) <= '3'))
                             {
-                                //TODO: Throw error here
+                                errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                 break;
                             }
                             //second charchter bounds
@@ -312,7 +316,7 @@ public class Lexer
                             {
                                 if (!isOctal(octalNumber.charAt(1)))
                                 {
-                                    //TODO: Throw error here
+                                    errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                     break;
                                 }
                                 i++; //need to increment extra
@@ -322,7 +326,7 @@ public class Lexer
                             {
                                 if (!isOctal(octalNumber.charAt(2)))
                                 {
-                                    //TODO: Throw error here
+                                    errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                     break;
                                 }
                                 i++;
@@ -334,7 +338,7 @@ public class Lexer
                             output.append(octalChar);
                         }
 
-                        //TODO: Throw error here
+                        errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                         break;
                 }
 
