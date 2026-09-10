@@ -39,12 +39,17 @@ public enum TokenType
     NOT,
     GREATER,
     LESS,
+    BITWISE_AND,
+    BITWISE_OR,
+    QUESTION_MARK,
 
     // Double Charachter
     EQUALS_EQUALS,
     NOT_EQUALS,
     GREATER_EQUALS,
     LESS_EQUALS,
+    AND,
+    OR,
 
     // Literals
     TRUE,

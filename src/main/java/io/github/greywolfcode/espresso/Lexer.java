@@ -181,6 +181,12 @@ public class Lexer
             case '<':
                 appendToken(match('=') ? TokenType.LESS_EQUALS : TokenType.LESS);
                 break;
+            case '|':
+                appendToken(match('|') ? TokenType.OR : TokenType.BITWISE_OR);
+                break;
+            case '&':
+                appendToken(match('&') ? TokenType.AND : TokenType.BITWISE_AND);
+                break;
             case '"':
                 parseString();
                 break;
