@@ -255,8 +255,6 @@ public class Lexer
             }
             offset++;
         }
-        //move to the final quote mark
-        offset++;
 
         //strip of quote charachters
         String token = source.substring(start + 1, offset - 1);
