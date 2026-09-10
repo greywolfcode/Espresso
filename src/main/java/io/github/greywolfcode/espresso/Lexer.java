@@ -154,6 +154,9 @@ public class Lexer
             case ';':
                 appendToken(TokenType.SEMICOLON);
                 break;
+            case ':':
+                appendToken(TokenType.COLON);
+                break;
             case '{':
                 appendToken(TokenType.LEFT_CURLY_BRACKET);
                 break;

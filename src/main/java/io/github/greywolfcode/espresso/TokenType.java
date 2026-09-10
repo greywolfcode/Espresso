@@ -27,6 +27,7 @@ public enum TokenType
     SLASH,
     LEFT_PAREN,
     RIGHT_PAREN,
+    COLON,
     SEMICOLON,
     RIGHT_CURLY_BRACKET,
     LEFT_CURLY_BRACKET,
