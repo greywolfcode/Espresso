@@ -440,7 +440,7 @@ public class Lexer
         {
             return false;
         }
-        if (!(source.charAt(offset + 1) == token))
+        if (!(source.charAt(offset) == token))
         {
             return false;
         }
