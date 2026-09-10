@@ -169,6 +169,9 @@ public class Lexer
             case '.':
                 appendToken(TokenType.PERIOD);
                 break;
+            case '?':
+                appendToken(TokenType.QUESTION_MARK);
+                break;
             case '=':
                 appendToken(match('=') ? TokenType.EQUALS_EQUALS : TokenType.EQUALS);
                 break;
