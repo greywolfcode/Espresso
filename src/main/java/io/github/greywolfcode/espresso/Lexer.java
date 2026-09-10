@@ -125,6 +125,20 @@ public class Lexer
             case '*':
                 appendToken(TokenType.STAR);
                 break;
+            case '/':
+                //single line comments
+                if (match('/'))
+                {
+                    parseLineComment();
+                    break;
+                }
+                else if (match('*'))
+                {
+                    parseBlockComment();
+                    break;
+                }
+                appendToken(TokenType.SLASH);
+                break;
             case '(':
                 appendToken(TokenType.LEFT_PAREN);
                 break;
@@ -184,6 +198,20 @@ public class Lexer
                     errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Token " + source.substring(start, offset));
                 }
                 break;
+        }
+    }
+    private void parseLineComment()
+    {
+        while (!match('\n'))
+        {
+            offset++;
+        }
+    }
+    private void parseBlockComment()
+    {
+        while(!(check('*') && matchNext('/')))
+        {
+            offset++;
         }
     }
     private void parseNumber()
@@ -417,6 +445,19 @@ public class Lexer
             return false;
         }
         offset++;
+        return true;
+    }
+    private boolean matchNext(char token)
+    {
+        if (isEnd())
+        {
+            return false;
+        }
+        if (!(source.charAt(offset + 1) == token))
+        {
+            return false;
+        }
+        offset += 2;
         return true;
     }
     private char peek()
