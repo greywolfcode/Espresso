@@ -28,6 +28,6 @@ public class ConsoleLineReporter extends ErrorReporter
         
         System.err.println(fileName + " [line " + data.lineNum() + "] Error: " + message);
         System.err.println(data.lineNum() + " | " + data.line());
-        System.err.println(" ".repeat(String.valueOf(data.lineNum()).length()) + "   " + "~".repeat(data.offset()) + "^");
+        System.err.println(" ".repeat(String.valueOf(data.lineNum()).length()) + "   " + "~".repeat(data.offset() - 1) + "^");
     }
 }
