@@ -21,6 +21,8 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import io.github.greywolfcode.espresso.Lexer;
 import io.github.greywolfcode.espresso.Token;
@@ -60,6 +62,8 @@ public class Espresso
     }
     private static void run(String[] files)
     {
+        Map<String, List<Token>> fileTokenData = new HashMap<String, List<Token>>();
+
         for (String path : files)
         {
             try
@@ -68,9 +72,8 @@ public class Espresso
                 String fileName = filePath.getFileName().toString();
                 String fileData = Files.readString(filePath);
                 Lexer lexer = new Lexer(fileData, filePath, errorHandeler);
-                List<Token> tokens = lexer.scan();
-                System.out.println(tokens);
-                
+                List<Token> tokens = lexer.scan();   
+                fileTokenData.put(filePath.toString(), tokens);
             }
             catch (NoSuchFileException e)
             {
