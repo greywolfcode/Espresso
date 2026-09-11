@@ -42,6 +42,7 @@ public enum TokenType
     BITWISE_AND,
     BITWISE_OR,
     QUESTION_MARK,
+    MODULO,
 
     // Double Charachter
     EQUALS_EQUALS,
@@ -50,6 +51,13 @@ public enum TokenType
     LESS_EQUALS,
     AND,
     OR,
+    PLUS_PLUS,
+    MINUS_MINUS,
+    PLUS_EQUAL,
+    MINUS_EQUAL,
+    SLASH_EQUAL,
+    MOD_EQUAL,
+    STAR_EQUAL,
 
     // Literals
     TRUE,

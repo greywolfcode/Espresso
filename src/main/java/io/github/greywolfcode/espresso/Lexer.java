@@ -117,13 +117,33 @@ public class Lexer
         switch (nextChar)
         {
             case '+':
+                if (match('+'))
+                {
+                   appendToken(TokenType.PLUS_PLUS); 
+                   break;
+                }
+                if (match('='))
+                {
+                   appendToken(TokenType.PLUS_EQUAL); 
+                   break;
+                }
                 appendToken(TokenType.PLUS);
                 break;
             case '-':
+                if (match('-'))
+                {
+                   appendToken(TokenType.MINUS_MINUS); 
+                   break;
+                }
+                if (match('='))
+                {
+                   appendToken(TokenType.MINUS_EQUAL); 
+                   break;
+                }
                 appendToken(TokenType.MINUS);
                 break;
             case '*':
-                appendToken(TokenType.STAR);
+                appendToken(match('=') ? TokenType.STAR_EQUAL : TokenType.STAR);
                 break;
             case '/':
                 //single line comments
@@ -137,7 +157,10 @@ public class Lexer
                     parseBlockComment();
                     break;
                 }
-                appendToken(TokenType.SLASH);
+                appendToken(match('=') ? TokenType.SLASH_EQUAL : TokenType.SLASH);
+                break;
+            case '%':
+                appendToken(TokenType.MODULO);
                 break;
             case '(':
                 appendToken(TokenType.LEFT_PAREN);
