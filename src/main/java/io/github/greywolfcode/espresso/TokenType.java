@@ -41,6 +41,11 @@ public enum TokenType
     LESS,
     BITWISE_AND,
     BITWISE_OR,
+    BITWISE_XOR,
+    BITWISE_NOT,
+    SIGNED_LEFT,
+    SIGNED_RIGHT,
+    UNSINGED_RIGHT,
     QUESTION_MARK,
     MODULO,
 

@@ -201,11 +201,37 @@ public class Lexer
             case '!':
                 appendToken(match('=') ? TokenType.NOT_EQUALS : TokenType.NOT);
                 break;
+            case '^':
+                appendToken(TokenType.BITWISE_XOR);
+                break;
+            case '~':
+                appendToken(TokenType.BITWISE_NOT);
+                break;
             case '>':
-                appendToken(match('=') ? TokenType.GREATER_EQUALS : TokenType.GREATER);
+                if (match('='))
+                {
+                    appendToken(TokenType.GREATER_EQUALS);
+                    break;
+                }
+                if (match('>'))
+                {
+                    appendToken(match('>') ? TokenType.UNSINGED_RIGHT : TokenType.SIGNED_RIGHT);
+                    break;
+                }
+                appendToken(TokenType.GREATER);
                 break;
             case '<':
-                appendToken(match('=') ? TokenType.LESS_EQUALS : TokenType.LESS);
+                if (match('='))
+                {
+                    appendToken(TokenType.LESS_EQUALS);
+                    break;
+                }
+                if (match('<'))
+                {
+                    appendToken(TokenType.SIGNED_LEFT);
+                    break;
+                }
+                appendToken(TokenType.LESS);
                 break;
             case '|':
                 appendToken(match('|') ? TokenType.OR : TokenType.BITWISE_OR);
