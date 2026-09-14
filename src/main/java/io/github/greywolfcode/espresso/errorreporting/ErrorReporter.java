@@ -33,6 +33,7 @@ public abstract class ErrorReporter
     {
         int newlines = 0;
         int lineStart = 0;
+        int lineEnd = offset;
 
         for (int i=0; i<offset; i++)
         {
@@ -47,6 +48,16 @@ public abstract class ErrorReporter
            } 
         }
 
-        return new LineData(newlines, offset - lineStart, fileData.substring(lineStart, offset));
+        //increase lineEnd so full line is displayed
+        for (int i=offset; i<fileData.length(); i++)
+        {
+            lineEnd++;
+            if (fileData.charAt(i) == '\n')
+            {
+                break;
+            }  
+        }
+
+        return new LineData(newlines, offset - lineStart, fileData.substring(lineStart, lineEnd));
     }
 }
