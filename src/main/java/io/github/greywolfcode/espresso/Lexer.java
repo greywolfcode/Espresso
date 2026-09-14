@@ -310,19 +310,19 @@ public class Lexer
         token = parseEscapeChars(token);
         appendToken(TokenType.STRING, token);
     }
-    private String parseEscapeChars(String source)
+    private String parseEscapeChars(String sourceLine)
     {
         StringBuilder output = new StringBuilder();
 
-        for (int i = 0; i < source.length(); i++)
+        for (int i = 0; i < sourceLine.length(); i++)
         {
-            if (source.charAt(i) != '\\')
+            if (sourceLine.charAt(i) != '\\')
             {
-                output.append(source.charAt(i));
+                output.append(sourceLine.charAt(i));
             }
             else
             {
-                switch (source.charAt(i+1))
+                switch (sourceLine.charAt(i+1))
                 {
                     case 't': // tab
                         output.append('\t');
@@ -378,18 +378,18 @@ public class Lexer
                         break;
                     default:
                         //handle octal escape codes
-                        if (isDigit(source.charAt(i+1)))
+                        if (isDigit(sourceLine.charAt(i+1)))
                         {
                             StringBuilder octalNumber = new StringBuilder();
-                            octalNumber.append(source.charAt(i+1));
+                            octalNumber.append(sourceLine.charAt(i+1));
 
-                            if (isDigit(source.charAt(i+2)))
+                            if (isDigit(sourceLine.charAt(i+2)))
                             {
-                                octalNumber.append(source.charAt(i+2));
+                                octalNumber.append(sourceLine.charAt(i+2));
                             }
-                            if (isDigit(source.charAt(i+3)))
+                            if (isDigit(sourceLine.charAt(i+3)))
                             {
-                                octalNumber.append(source.charAt(i+2));
+                                octalNumber.append(sourceLine.charAt(i+2));
                             }
 
                             //first charachter bounds
