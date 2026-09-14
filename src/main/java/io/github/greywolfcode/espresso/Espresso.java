@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import io.github.greywolfcode.espresso.Lexer;
+import io.github.greywolfcode.espresso.Parser;
 import io.github.greywolfcode.espresso.Token;
 import io.github.greywolfcode.espresso.errorreporting.ConsoleLineReporter;
 import io.github.greywolfcode.espresso.errorreporting.ErrorReporter;
@@ -85,6 +86,16 @@ public class Espresso
                 System.err.println("Espresso: IO Error (" + path + ")");
                 System.exit(74);
             }
+        } 
+
+        if (errorHandeler.getHadError())
+        {
+            return;
+        }
+
+        for (Map.Entry<String, List<Token>> entry : fileTokenData.entrySet())
+        {
+            Parser parser = new Parser(entry.getValue(), errorHandeler);
         }
     }
 }
