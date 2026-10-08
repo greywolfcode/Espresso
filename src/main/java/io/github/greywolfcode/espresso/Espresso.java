@@ -16,7 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.greywolfcode.espresso;import java.io.IOException;
+package io.github.greywolfcode.espresso;
+
+import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Files;
 import java.nio.file.Path;
