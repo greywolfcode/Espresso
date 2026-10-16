@@ -19,19 +19,88 @@
 package io.github.greywolfcode.espresso;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import io.github.greywolfcode.espresso.errorreporting.ErrorReporter;
 import io.github.greywolfcode.espresso.Token;
+import io.github.greywolfcode.espresso.TokenType;
 
 public class Parser 
 {
     private final ErrorReporter errorHandeler;
     private final List<Token> tokens;
+    private int location;
 
     public Parser(List<Token> paramTokens, ErrorReporter paramErrorHandeler)
     {
         tokens = paramTokens;
         errorHandeler = paramErrorHandeler;
+        location = 0;
     }
+    public List<Dclr> parse()
+    {
+        List<Dclr> declarations = new ArrayList<Dclr>();
+
+        while (!isEnd())
+        {
+            declarations.add(processDeclaration());
+        }
+        return declarations;
+    }
+    private Dclr processDeclaration()
+    {
+        Token next = advance();
+
+        switch (next.getType())
+        {
+            case TokenType.PACKAGE:
+                return createPackage();
+        }
+        return null;
+    }
+
+    private Dclr.Package createPackage()
+    {
+        StringBuilder packageParts = new StringBuilder();
+        Token next;
+        while (!isEnd() && peek().getType() != TokenType.SEMICOLON)
+        {
+            next = advance();
+            if (next.getType() == TokenType.IDENTIFIER || next.getType() == TokenType.PERIOD)
+            {
+
+                packageParts.append(next.getToken());
+            }
+            else
+            {
+                //TODO: show error
+            }
+        }
+
+        return new Dclr.Package(packageParts.toString());
+    }
+
+    private Token advance()
+    {
+        if (!isEnd())
+        {
+            location++;
+        }
+        return previous();
+    }
+    private Token previous()
+    {
+        return tokens.get(location - 1);
+    }
+    private Token peek()
+    {
+        //location is always on the next token
+        return tokens.get(location);
+    }
+    private boolean isEnd()
+    {
+        return location >= tokens.size();
+    }
+
 
 }
