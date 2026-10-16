@@ -36,6 +36,22 @@ public class Token
         token = paramToken;
         type = paramType;
     }
+    public int getOffset()
+    {
+        return offset;
+    }
+    public Path getFile()
+    {
+        return file;
+    }
+    public String getToken()
+    {
+        return token;
+    }
+    public TokenType getType()
+    {
+        return type;
+    }
     public String toString()
     {
         return "Token: " + token + " Type: " + type + " " + offset;
