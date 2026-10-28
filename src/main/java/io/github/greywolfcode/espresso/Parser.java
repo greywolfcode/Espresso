@@ -55,6 +55,8 @@ public class Parser
         {
             case TokenType.PACKAGE:
                 return createPackage();
+            case TokenType.IMPORT:
+                return createImport();
         }
         return null;
     }
@@ -78,6 +80,26 @@ public class Parser
         }
 
         return new Dclr.Package(packageParts.toString());
+    }
+    private Dclr.Import createImport()
+    {
+        StringBuilder importParts = new StringBuilder();
+        Token next;
+        while (!isEnd() && peek().getType() != TokenType.SEMICOLON)
+        {
+            next = advance();
+            if (next.getType() == TokenType.IDENTIFIER || next.getType() == TokenType.PERIOD)
+            {
+
+                importParts.append(next.getToken());
+            }
+            else
+            {
+                //TODO: show error
+            }
+        }
+
+        return new Dclr.Import(importParts.toString());
     }
 
     private Token advance()
