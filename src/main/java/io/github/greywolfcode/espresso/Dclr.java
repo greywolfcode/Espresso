@@ -27,6 +27,7 @@ abstract class Dclr
         public R visitPackageDclr(Package dclr);
         public R visitImportDclr(Import dclr);
         public R visitClassDclr(Class dclr);
+        public R visitMethodDclr(Method dclr);
     }
 
     public abstract <R> R accept(Visitor<R> visitor);
@@ -108,16 +109,42 @@ abstract class Dclr
             return this.declarations;
         }
     }
+    static class Method extends Dclr
+    {
+        private final List<Modifier> modifiers;
+        private final String returnType;
+        private final String name;
+        private final List<String[]> args;
         private final List<Stmt> statements;
 
-        public Class(List<Stmt> statements)
+        public Method(List<Modifier> modifiers, String returnType, String name, List<String[]> args, List<Stmt> statements)
         {
+            this.modifiers = modifiers;
+            this.returnType = returnType;
+            this.name = name;
+            this.args = args;
             this.statements = statements;
         }
         @Override
         public <R> R accept(Visitor<R> visitor)
         {
-            return visitor.visitClassDclr(this);
+            return visitor.visitMethodDclr(this);
+        }
+        public List<Modifier> getModifiers()
+        {
+            return this.modifiers;
+        }
+        public String getReturnType()
+        {
+            return this.returnType;
+        }
+        public String getName()
+        {
+            return this.name;
+        }
+        public List<String[]> getArgs()
+        {
+            return this.args;
         }
         public List<Stmt> getStatements()
         {

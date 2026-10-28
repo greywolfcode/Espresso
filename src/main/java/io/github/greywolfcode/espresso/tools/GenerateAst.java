@@ -63,6 +63,13 @@ public class GenerateAst
                         new Field("List<Dclr>", "declarations"),
                     } //Field[]
                 ), //Type
+                new Type(
+                    "Method",
+                    new Field[] {
+                        new Field("List<Modifier>", "modifiers"),
+                        new Field("String", "returnType"),
+                        new Field("String", "name"),
+                        new Field("List<String[]>", "args"),
                         new Field("List<Stmt>", "statements"),
                     } //Field[]
                 ) //Type
