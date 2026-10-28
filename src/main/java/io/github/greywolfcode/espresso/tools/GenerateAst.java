@@ -56,6 +56,13 @@ public class GenerateAst
                 new Type(
                     "Class",
                     new Field[] {
+                        new Field("List<Modifier>", "modifiers"),
+                        new Field("String", "name"),
+                        new Field("String", "superclass"),
+                        new Field("List<String>", "interfaces"),
+                        new Field("List<Dclr>", "declarations"),
+                    } //Field[]
+                ), //Type
                         new Field("List<Stmt>", "statements"),
                     } //Field[]
                 ) //Type

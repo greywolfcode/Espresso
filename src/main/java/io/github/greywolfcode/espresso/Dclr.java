@@ -68,6 +68,46 @@ abstract class Dclr
     }
     static class Class extends Dclr
     {
+        private final List<Modifier> modifiers;
+        private final String name;
+        private final String superclass;
+        private final List<String> interfaces;
+        private final List<Dclr> declarations;
+
+        public Class(List<Modifier> modifiers, String name, String superclass, List<String> interfaces, List<Dclr> declarations)
+        {
+            this.modifiers = modifiers;
+            this.name = name;
+            this.superclass = superclass;
+            this.interfaces = interfaces;
+            this.declarations = declarations;
+        }
+        @Override
+        public <R> R accept(Visitor<R> visitor)
+        {
+            return visitor.visitClassDclr(this);
+        }
+        public List<Modifier> getModifiers()
+        {
+            return this.modifiers;
+        }
+        public String getName()
+        {
+            return this.name;
+        }
+        public String getSuperclass()
+        {
+            return this.superclass;
+        }
+        public List<String> getInterfaces()
+        {
+            return this.interfaces;
+        }
+        public List<Dclr> getDeclarations()
+        {
+            return this.declarations;
+        }
+    }
         private final List<Stmt> statements;
 
         public Class(List<Stmt> statements)
