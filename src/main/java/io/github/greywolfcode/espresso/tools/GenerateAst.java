@@ -90,7 +90,7 @@ public class GenerateAst
         writer.println();
         writer.println("import java.util.List;");
         writer.println();
-        writer.println("abstract class " + name);
+        writer.println("public abstract class " + name);
         writer.println("{");
 
         defineVisitor(writer, name, types);

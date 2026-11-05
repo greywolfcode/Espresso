@@ -20,7 +20,7 @@ package io.github.greywolfcode.espresso;
 
 import java.util.List;
 
-abstract class Dclr
+public abstract class Dclr
 {
     interface Visitor<R>
     {
