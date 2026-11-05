@@ -95,9 +95,13 @@ public class Espresso
             return;
         }
 
+        Map<String, List<Dclr>> fileASTs = new HashMap<String, List<Dclr>>();
+
         for (Map.Entry<String, List<Token>> entry : fileTokenData.entrySet())
         {
             Parser parser = new Parser(entry.getValue(), errorHandeler);
+            List<Dclr> ast = parser.parse();
+            fileASTs.put(entry.getKey(), ast);
         }
     }
 }
