@@ -361,7 +361,9 @@ public class Lexer
                             if (isHexadecimal(c))
                             {
                                 invalid = true;
-                                errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
+                                //this method works with juset the string, so need to factor that into offset for calculation
+                                int stringOffset = sourceLine.length() - i - 1; // -1 to not point to slash
+                                errorHandeler.report(offset - stringOffset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                 break;
                             }
                         }
@@ -395,7 +397,9 @@ public class Lexer
                             //first charachter bounds
                             if (!(octalNumber.charAt(0) >= '0' && octalNumber.charAt(0) <= '3'))
                             {
-                                errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
+                                //this method works with juset the string, so need to factor that into offset for calculation
+                                int stringOffset = sourceLine.length() - i - 1; // -1 to not point to slash
+                                errorHandeler.report(offset - stringOffset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                 break;
                             }
                             //second charchter bounds
@@ -403,7 +407,9 @@ public class Lexer
                             {
                                 if (!isOctal(octalNumber.charAt(1)))
                                 {
-                                    errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
+                                    //this method works with juset the string, so need to factor that into offset for calculation
+                                    int stringOffset = sourceLine.length() - i - 2; // -2 to not point to slash or 1st number
+                                    errorHandeler.report(offset - stringOffset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                     break;
                                 }
                                 i++; //need to increment extra
@@ -413,7 +419,9 @@ public class Lexer
                             {
                                 if (!isOctal(octalNumber.charAt(2)))
                                 {
-                                    errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
+                                    //this method works with juset the string, so need to factor that into offset for calculation
+                                    int stringOffset = sourceLine.length() - i - 3; // -3 to not point to slash or 1st two numbers
+                                    errorHandeler.report(offset - stringOffset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                                     break;
                                 }
                                 i++;
@@ -425,7 +433,9 @@ public class Lexer
                             output.append(octalChar);
                         }
 
-                        errorHandeler.report(offset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
+                        //this method works with juset the string, so need to factor that into offset for calculation
+                        int stringOffset = sourceLine.length() - i - 1; // -1 to not point to slash
+                        errorHandeler.report(offset - stringOffset, source, sourcePath.getFileName().toString(), "Invalid Escape Code");
                         break;
                 }
 
